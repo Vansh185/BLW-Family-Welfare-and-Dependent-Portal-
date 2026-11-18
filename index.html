@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLW Family Welfare & Member Directory</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #319795;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header img.logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #cbd5e0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            font-size: 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .family-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .family-group h4 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--secondary-color);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #2c5282;
+        }
+
+        .search-flex {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-flex input {
+            margin: 0;
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .profile-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item span {
+            display: block;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .info-item strong {
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: var(--primary-color);
+            font-size: 13px;
+        }
+
+        td {
+            font-size: 13px;
+        }
+
+        .error-msg {
+            color: #e53e3e;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success-msg {
+            color: #38a169;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- Login & Password Eye Styles --- */
+        .hidden {
+            display: none !important;
+        }
+        
+        .login-card {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        
+        #loginError {
+            color: #e53e3e;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 8px 0 15px 0;
+        }
+
+        .password-wrapper input {
+            margin: 0; /* Overrides default margin so it aligns correctly */
+            padding-right: 40px; /* Leaves space for the eye icon */
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eye-icon:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1JGySnLywruzpzqS2Gu2Ph3uDexSVD3D8XMRF7JYz3Dxs7I3tOQaWyPo&s" alt="BLW Logo" class="logo">
+        <h1>Banaras Locomotive Works (BLW)</h1>
+        <p>Employee Family Welfare & Dependent Information Portal</p>
+    </header>
+
+    <!-- Login Section -->
+    <div class="container" id="loginContainer">
+        <div class="card login-card">
+            <h3 style="text-align: center;">Authorized Staff Login</h3>
+            <form onsubmit="handleLogin(event)">
+                <label>Email Address:</label>
+                <input type="email" id="loginEmail" required placeholder="Enter admin email">
+                
+                <label>Password:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="loginPassword" required placeholder="Enter password">
+                    <span class="eye-icon" onclick="togglePassword()">
+                        <!-- SVG icon for "Eye open" by default -->
+                        <svg id="eyeOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <!-- SVG icon for "Eye closed (slash)" hidden by default -->
+                        <svg id="eyeClosed" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </span>
+                </div>
+                
+                <button type="submit" style="width: 100%; margin-top: 10px;">Login to Portal</button>
+                <div id="loginError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden initially) -->
+    <div class="container hidden" id="mainAppContainer">
+        
+        <!-- Search Section -->
+        <div class="card">
+            <h3>Search Employee Record</h3>
+            <p style="font-size: 13px; color: #718096;">Try searching for <strong>"Rajesh Kumar"</strong> or any newly added employee.</p>
+            <div class="search-flex">
+                <input type="text" id="searchQuery" placeholder="Enter Employee Name...">
+                <button onclick="searchEmployee()">Search</button>
+            </div>
+            <div id="errorMsg" class="error-msg">No employee found matching that name.</div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultContainer" class="card result-container">
+            <div class="profile-header">
+                <h2 id="empName" style="margin:0; color: var(--primary-color);">Employee Name</h2>
+                <span id="empId" style="font-size: 13px; color: #718096;">ID: BLW/000</span>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span>Designation & Shop</span>
+                    <strong id="empShop">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>Quarter Number</span>
+                    <strong id="empQuarter">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>Contact Number</span>
+                    <strong id="empPhone">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>Medical Card ID</span>
+                    <strong id="empMedical">-</strong>
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; color: var(--primary-color); border:none; padding:0; margin-bottom: 5px;">Registered Family Members</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Relationship</th>
+                        <th>Age</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="familyTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Add New Record Section -->
+        <div class="card">
+            <h3>Add New Employee Record (Stored Locally)</h3>
+            <form id="addForm" onsubmit="saveEmployee(event)">
+                <label>Employee Name:</label>
+                <input type="text" id="newName" required placeholder="e.g. Ramesh Singh">
+
+                <label>Employee ID:</label>
+                <input type="text" id="newId" required placeholder="e.g. BLW/EMP/9988">
+
+                <label>Shop / Department:</label>
+                <input type="text" id="newShop" required placeholder="e.g. Steel Foundry">
+
+                <label>Quarter Number:</label>
+                <input type="text" id="newQuarter" required placeholder="e.g. Type-I, Qtr 14">
+
+                <label>Phone Number:</label>
+                <input type="text" id="newPhone" required placeholder="e.g. +91 91234 56789">
+
+                <label>Medical ID:</label>
+                <input type="text" id="newMedical" required placeholder="e.g. MED-778899">
+
+                <!-- Family Member 1 -->
+                <div class="family-group">
+                    <h4>Family Member 1</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="fam1Name" placeholder="Name">
+                        <input type="text" id="fam1Rel" placeholder="Relation">
+                        <input type="number" id="fam1Age" placeholder="Age">
+                    </div>
+                </div>
+
+                <!-- Family Member 2 -->
+                <div class="family-group">
+                    <h4>Family Member 2</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="fam2Name" placeholder="Name">
+                        <input type="text" id="fam2Rel" placeholder="Relation">
+                        <input type="number" id="fam2Age" placeholder="Age">
+                    </div>
+                </div>
+
+                <!-- Family Member 3 -->
+                <div class="family-group">
+                    <h4>Family Member 3</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="fam3Name" placeholder="Name">
+                        <input type="text" id="fam3Rel" placeholder="Relation">
+                        <input type="number" id="fam3Age" placeholder="Age">
+                    </div>
+                </div>
+
+                <button type="submit">Save Entry to Database</button>
+                <div id="successMsg" class="success-msg">New employee record and family members saved successfully!</div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Password Toggle Logic ---
+        function togglePassword() {
+            const passwordInput = document.getElementById("loginPassword");
+            const eyeOpen = document.getElementById("eyeOpen");
+            const eyeClosed = document.getElementById("eyeClosed");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeOpen.style.display = "none";
+                eyeClosed.style.display = "block";
+            } else {
+                passwordInput.type = "password";
+                eyeOpen.style.display = "block";
+                eyeClosed.style.display = "none";
+            }
+        }
+
+        // --- Login Logic ---
+        function handleLogin(event) {
+            event.preventDefault(); 
+            
+            const emailInput = document.getElementById("loginEmail").value.trim();
+            const passwordInput = document.getElementById("loginPassword").value;
+            const errorMsg = document.getElementById("loginError");
+            
+            if (emailInput !== "mauryavansh93@gmail.com") {
+                errorMsg.innerText = "Please entry correct email";
+                errorMsg.style.display = "block";
+                return;
+            }
+            
+            if (passwordInput !== "Vansh@#123") {
+                errorMsg.innerText = "Please entry correct password";
+                errorMsg.style.display = "block";
+                return;
+            }
+            
+            errorMsg.style.display = "none";
+            document.getElementById("loginContainer").classList.add("hidden");
+            document.getElementById("mainAppContainer").classList.remove("hidden");
+        }
+
+        // --- Existing Database Logic ---
+        const defaultDatabase = [
+            {
+                name: "Rajesh Kumar",
+                id: "BLW/EMP/4021",
+                shop: "Loco Assembly Shop",
+                quarter: "Type-III, Qtr No. 12A",
+                phone: "+91 94512 88390",
+                medical: "MED-554102",
+                family: [
+                    { name: "Sunita Devi", relation: "Wife", age: 42, status: "Eligible" },
+                    { name: "Rohit Kumar", relation: "Son", age: 19, status: "Eligible" }
+                ]
+            }
+        ];
+
+        function getDatabase() {
+            const stored = localStorage.getItem("blw_employees");
+            if (!stored) {
+                localStorage.setItem("blw_employees", JSON.stringify(defaultDatabase));
+                return defaultDatabase;
+            }
+            return JSON.parse(stored);
+        }
+
+        function searchEmployee() {
+            const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+            const resultContainer = document.getElementById("resultContainer");
+            const errorMsg = document.getElementById("errorMsg");
+            const database = getDatabase();
+
+            if (query === "") {
+                alert("Please enter a name to search.");
+                return;
+            }
+
+            const foundEmp = database.find(emp => emp.name.toLowerCase().includes(query));
+
+            if (foundEmp) {
+                document.getElementById("empName").innerText = foundEmp.name;
+                document.getElementById("empId").innerText = "ID: " + foundEmp.id;
+                document.getElementById("empShop").innerText = foundEmp.shop;
+                document.getElementById("empQuarter").innerText = foundEmp.quarter;
+                document.getElementById("empPhone").innerText = foundEmp.phone;
+                document.getElementById("empMedical").innerText = foundEmp.medical;
+
+                const tableBody = document.getElementById("familyTableBody");
+                tableBody.innerHTML = ""; 
+
+                if (foundEmp.family && foundEmp.family.length > 0) {
+                    foundEmp.family.forEach(member => {
+                        const row = `<tr>
+                            <td>${member.name}</td>
+                            <td>${member.relation}</td>
+                            <td>${member.age} yrs</td>
+                            <td><span style="color: green;">✔ ${member.status}</span></td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #718096;">No family members registered.</td></tr>`;
+                }
+
+                resultContainer.style.display = "block";
+                errorMsg.style.display = "none";
+            } else {
+                resultContainer.style.display = "none";
+                errorMsg.style.display = "block";
+            }
+        }
+
+        function saveEmployee(event) {
+            event.preventDefault();
+            
+            const database = getDatabase();
+            const familyList = [];
+            
+            const f1Name = document.getElementById("fam1Name").value.trim();
+            if (f1Name) {
+                familyList.push({
+                    name: f1Name,
+                    relation: document.getElementById("fam1Rel").value.trim() || "Dependent",
+                    age: document.getElementById("fam1Age").value.trim() || "0",
+                    status: "Eligible"
+                });
+            }
+
+            const f2Name = document.getElementById("fam2Name").value.trim();
+            if (f2Name) {
+                familyList.push({
+                    name: f2Name,
+                    relation: document.getElementById("fam2Rel").value.trim() || "Dependent",
+                    age: document.getElementById("fam2Age").value.trim() || "0",
+                    status: "Eligible"
+                });
+            }
+
+            const f3Name = document.getElementById("fam3Name").value.trim();
+            if (f3Name) {
+                familyList.push({
+                    name: f3Name,
+                    relation: document.getElementById("fam3Rel").value.trim() || "Dependent",
+                    age: document.getElementById("fam3Age").value.trim() || "0",
+                    status: "Eligible"
+                });
+            }
+
+            const newEmp = {
+                name: document.getElementById("newName").value.trim(),
+                id: document.getElementById("newId").value.trim(),
+                shop: document.getElementById("newShop").value.trim(),
+                quarter: document.getElementById("newQuarter").value.trim(),
+                phone: document.getElementById("newPhone").value.trim(),
+                medical: document.getElementById("newMedical").value.trim(),
+                family: familyList
+            };
+
+            database.push(newEmp);
+            localStorage.setItem("blw_employees", JSON.stringify(database));
+
+            document.getElementById("successMsg").style.display = "block";
+            document.getElementById("addForm").reset();
+
+            setTimeout(() => {
+                document.getElementById("successMsg").style.display = "none";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
